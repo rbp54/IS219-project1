@@ -1,0 +1,6 @@
+extends layout
+block content
+    ul
+    each college in colleges
+        li
+            a(href='/colleges/#{college._id}') #{college.INSTNM}
