@@ -5,12 +5,16 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
+var multer = require('multer');
+var csvParser = require('csv-parse');
+
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var colleges = require('./controllers/collegeController');
-
+var college = require('./routes/college');
 var app = express();
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -23,16 +27,44 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(multer());
 
 app.use('/', routes);
 app.use('/users', users);
 app.use('/colleges', colleges);
 app.use('/colleges/:id', colleges);
+app.use('/upload', college);
 
 /** team stuff */
 var teams = require('./controllers/home-mongoose')
 app.use('/teams', teams);
 /** end team stuff */
+
+app.post("/uploads", function(req, res, next){ 
+  console.log('upload area..');
+  console.log(req.files.myFile);
+
+
+  /* CSV file parser*/
+  var fs = require('fs');
+  fs.readFile(req.files.myFile.path, {
+            encoding: 'utf-8'
+        }, function(err, csvData) {
+            if (err) {
+                console.log(err);
+            }
+  
+            csvParser(csvData, {
+                delimiter: ',' 
+            }, function(err, data) {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log(data);
+                }
+            });
+        });
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -74,7 +106,5 @@ var server = app.listen(3000, function () {
     console.log('Example app listening at http://%s:%s', host, port)
 
 });
-
-
 
 module.exports = app;
