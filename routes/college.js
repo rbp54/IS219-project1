@@ -5,10 +5,7 @@ var fs = require("fs");
 
 /* GET College page. */
 router.get('/', function(req, res, next) {
-  res.render('upload', { title: 'College List' });
+  res.render('upload');
 });
-
-
-
 
 module.exports = router;

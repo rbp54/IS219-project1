@@ -40,10 +40,8 @@ var teams = require('./controllers/home-mongoose')
 app.use('/teams', teams);
 /** end team stuff */
 
-app.post("/uploads", function(req, res, next){ 
-  console.log('upload area..');
-  console.log(req.files.myFile);
-
+app.post("/uploads", function(req, res, next){
+  //console.log(req.files.myFile);
 
   /* CSV file parser*/
   var fs = require('fs');
@@ -53,14 +51,18 @@ app.post("/uploads", function(req, res, next){
             if (err) {
                 console.log(err);
             }
-  
+
             csvParser(csvData, {
-                delimiter: ',' 
+                delimiter: ','
             }, function(err, data) {
                 if (err) {
                     console.log(err);
                 } else {
-                    console.log(data);
+                    var college_data = require('./model/college-data');
+
+                    college_data.upload(data, function() {
+                        res.redirect('/colleges');
+                    });
                 }
             });
         });
